@@ -1,4 +1,4 @@
-package br.com.alura.screenMatch.service;
+package br.com.alura.screenMatch;
 
 import br.com.alura.screenMatch.principal.Principal;
 import org.springframework.boot.CommandLineRunner;
