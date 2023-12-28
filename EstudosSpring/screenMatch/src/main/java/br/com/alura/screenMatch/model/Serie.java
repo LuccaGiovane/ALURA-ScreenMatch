@@ -1,20 +1,39 @@
 package br.com.alura.screenMatch.model;
 
+import br.com.alura.screenMatch.service.ConsultaChatGPT;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
+@Entity
+@Table(name="Series")
 public class Serie
 {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(unique = true)
     String titulo;
     Integer totalTemporadas;
     Double avaliacao;
+    @Enumerated(EnumType.STRING)
     Categoria genero;
     String atores;
     String poster;
     String sinopse;
 
+    @Transient
+    private List<Episodio> episodios = new ArrayList<>();
+
+    public Serie()
+    {
+
+    }
     public Serie(DadosSerie dadosSerie)
     {
         this.titulo = dadosSerie.titulo();
@@ -26,7 +45,25 @@ public class Serie
         this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0]);
         this.atores = dadosSerie.atores();
         this.poster = dadosSerie.poster();
-        this.sinopse = dadosSerie.sinopse();
+        //descomente e substitua para usar a API do chat GPT ( tem que por a API Key deles tbm)
+        this.sinopse = dadosSerie.sinopse(); //ConsultaChatGPT.obterTraducao(dadosSerie.sinopse()).trim();
+    }
+
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        this.episodios = episodios;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitulo() {
