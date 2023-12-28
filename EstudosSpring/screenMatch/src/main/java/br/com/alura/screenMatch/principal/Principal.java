@@ -1,9 +1,6 @@
 package br.com.alura.screenMatch.principal;
 
-import br.com.alura.screenMatch.model.DadosEpisodio;
-import br.com.alura.screenMatch.model.DadosSerie;
-import br.com.alura.screenMatch.model.DadosTemporada;
-import br.com.alura.screenMatch.model.Episodio;
+import br.com.alura.screenMatch.model.*;
 import br.com.alura.screenMatch.service.ConsumoApi;
 import br.com.alura.screenMatch.service.ConverteDados;
 
@@ -17,51 +14,68 @@ public class Principal
     ConsumoApi consumoApi = new ConsumoApi();
     ConverteDados conversor = new ConverteDados();
     private Scanner input = new Scanner(System.in);
+    private List<DadosSerie> dadosSeries = new ArrayList<>();
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
     private final String API_KEY  = "&apikey=18ae168a";
 
     public void exibeMenu()
     {
-        var menu = """
+        var opcao = -1;
+
+
+        var apresentacao =
+                """
                 ******************
-                * IMDB CONSULTOR *
+                * OMDB CONSULTOR *
                 ******************
-                
-                [1] Buscar séries
+                """;
+        System.out.println(apresentacao);
+
+        while (opcao != 0)
+        {
+            var menu =
+                """
+                \n\n[1] Buscar séries
                 [2] Buscar episódios
-                [3] Sair
+                [3] Listar séries buscadas
+                [0] Sair
                 Escolha uma das opções:                                 
                 """;
 
-        System.out.println(menu);
-        var opcao = input.nextInt();
-        input.nextLine();
+            System.out.println(menu);
+            opcao = input.nextInt();
+            input.nextLine();
 
-        switch (opcao)
-        {
-            case 1:
-                buscarSerieWeb();
-                break;
+            switch (opcao)
+            {
+                case 1:
+                    buscarSerieWeb();
+                    break;
 
-            case 2:
-                buscarEpisodioPorSerie();
-                break;
+                case 2:
+                    buscarEpisodioPorSerie();
+                    break;
 
-            case 0:
-                System.out.println("Saindo...");
-                break;
+                case 3:
+                    listarSeriesBuscadas();
+                    break;
 
-            default:
-                System.out.println("Opção inválida");
+                case 0:
+                    System.out.println("Saindo...");
+                    break;
+
+                default:
+                    System.out.println("Opção inválida");
+            }
         }
-
     }
 
      private void buscarSerieWeb()
      {
         DadosSerie dados = getDadosSerie();
+        dadosSeries.add(dados);
         System.out.println(dados);
-    }
+     }
 
     private DadosSerie getDadosSerie()
     {
@@ -83,5 +97,17 @@ public class Principal
             temporadas.add(dadosTemporada);
         }
         temporadas.forEach(System.out::println);
+    }
+
+    private void listarSeriesBuscadas()
+    {
+        List<Serie> series = new ArrayList<>();
+        series = dadosSeries.stream()
+                .map(d -> new Serie(d))//para cada dado serie cria uma serie
+                .collect(Collectors.toList());//feito isso coleta pra uma lista
+
+        series.stream()
+                .sorted(Comparator.comparing(Serie::getGenero))//ordena as series por genero
+                .forEach(System.out::println);//uma vez ordenado as series, mostra todas
     }
 }
