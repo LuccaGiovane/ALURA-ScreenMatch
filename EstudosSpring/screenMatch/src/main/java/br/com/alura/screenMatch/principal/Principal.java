@@ -109,10 +109,7 @@ public class Principal
 
     private void listarSeriesBuscadas()
     {
-        List<Serie> series = new ArrayList<>();
-        series = dadosSeries.stream()
-                .map(d -> new Serie(d))//para cada dado serie cria uma serie
-                .collect(Collectors.toList());//feito isso coleta pra uma lista
+        List<Serie> series = repositorio.findAll();//busca quem esta cadastrado no banco
 
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))//ordena as series por genero
