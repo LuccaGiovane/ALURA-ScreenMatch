@@ -46,6 +46,11 @@ public class Principal
                 \n\n[1] Buscar séries
                 [2] Buscar episódios
                 [3] Listar séries buscadas
+                [4] Buscar série por título
+                [5] Buscar série(s) por ator
+                [6] Top 5 melhores series
+                [7] Buscar série por gênero
+                [8] Buscar série por número de temporadas e avaliação
                 [0] Sair
                 Escolha uma das opções:                                 
                 """;
@@ -68,6 +73,26 @@ public class Principal
                     listarSeriesBuscadas();
                     break;
 
+                case 4:
+                    buscarSeriePorTitulo();
+                    break;
+
+                case 5:
+                    buscarSeriePorAtor();
+                    break;
+
+                case 6:
+                    buscarTop5Series();
+                    break;
+
+                case 7:
+                    buscarSeriePorGenero();
+                    break;
+
+                case 8:
+                    buscarSeriePorTemporadasEAvaliacao();
+                    break;
+
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -78,7 +103,8 @@ public class Principal
         }
     }
 
-     private void buscarSerieWeb()
+
+    private void buscarSerieWeb()
      {
         DadosSerie dados = getDadosSerie();
         Serie serie = new Serie (dados);
@@ -140,4 +166,75 @@ public class Principal
                 .sorted(Comparator.comparing(Serie::getGenero))//ordena as series por genero
                 .forEach(System.out::println);//uma vez ordenado as series, mostra todas
     }
+
+    private void buscarSeriePorTitulo()
+    {
+        System.out.println("Escolha uma serie pelo nome:");
+        var nomeSerie = input.nextLine();
+
+        Optional<Serie> serieBuscada = repositorio.findByTituloContainingIgnoreCase(nomeSerie);
+
+        if(serieBuscada.isPresent())
+        {
+            System.out.println("Dados da série " + serieBuscada.get());
+        }
+        else
+        {
+            System.out.println("Série não encontrada.");
+        }
+    }
+
+    private void buscarSeriePorAtor()
+    {
+        System.out.println("Informe o nome do ator para a busca:");
+        var nomeAtor = input.nextLine();
+
+        System.out.println("Avaliações a partir de qual valor: ");
+        var avaliacao = input.nextDouble();
+
+        List<Serie> seriesEncontradas = repositorio.findByAtoresContainingIgnoreCaseAndAvaliacaoGreaterThanEqual(nomeAtor, avaliacao);
+
+        System.out.println("Série(s) em que "+ nomeAtor + " trabalhou:");
+        seriesEncontradas.forEach(s ->
+                System.out.println(s.getTitulo() + " - avaliação["+ s.getAvaliacao() + "]"));
+
+    }
+
+    private void buscarTop5Series()
+    {
+        List<Serie> seriesTop = repositorio.findTop5ByOrderByAvaliacaoDesc();
+
+        System.out.println("Melhores series:");
+        seriesTop.forEach(s ->
+                System.out.println(s.getTitulo() + " - avaliação[" + s.getAvaliacao() + "]"));
+    }
+
+    private void buscarSeriePorGenero()
+    {
+        System.out.println("Informe o gênero:");
+        var nomeGenero = input.nextLine();
+
+        Categoria categoria = Categoria.fromPortugues(nomeGenero);
+        List<Serie> seriesPorGenero = repositorio.findByGenero(categoria);
+
+        System.out.println("Séries do gênero [" + nomeGenero + "]");
+        seriesPorGenero.forEach(s ->
+                System.out.println(s.getTitulo()));
+    }
+
+     private void buscarSeriePorTemporadasEAvaliacao()
+     {
+         System.out.println("Informe o número máximo de temporadas");
+         var maximoTemporadas = input.nextInt();
+         System.out.println("Informe o valor mínimo de avaliações");
+         var minimoAvaliacoes = input.nextDouble();
+
+         List<Serie> seriesTempAvaliacao = repositorio.seriePorTemporadaEAvaliacao(maximoTemporadas, minimoAvaliacoes);
+
+         seriesTempAvaliacao.forEach(s ->
+                 System.out.println(s.getTitulo()+ " - temporadas["+ s.getTotalTemporadas() +
+                         "] - avaliação[" + s.getAvaliacao() + "]"));
+     }
 }
+
+
