@@ -1,12 +1,9 @@
 package br.com.alura.screenMatch.model;
 
-import br.com.alura.screenMatch.service.ConsultaChatGPT;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.OptionalDouble;
 
 @Entity
